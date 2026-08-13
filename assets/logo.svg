@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
+  <defs>
+    <!-- Cyan to Cobalt Gradient for Outer Hexagon -->
+    <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="50%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+
+    <!-- Cyan Glow Filter -->
+    <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Hexagon Icon + Head Silhouette -->
+  <g transform="translate(6, 4)">
+    <!-- Hexagon Frame (Pointy Top) -->
+    <polygon points="36,4 66,21 66,55 36,72 6,55 6,21" 
+             fill="none" 
+             stroke="url(#hexGrad)" 
+             stroke-width="5" 
+             stroke-linejoin="round"
+             filter="url(#cyanGlow)" />
+
+    <!-- Head Profile Silhouette Facing Right -->
+    <path d="M 40 19 
+             C 48 19, 54 24, 54 31 
+             C 54 35, 52 38, 49 40 
+             C 51 43, 52 45, 51 48 
+             C 49 48, 47 49, 45 51 
+             C 43 53, 42 57, 42 61 
+             L 35 61 
+             C 35 55, 37 52, 34 50 
+             C 32 48, 32 43, 32 41 
+             C 29 41, 28 37, 28 34 
+             C 28 30, 32 19, 40 19 Z" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="3.5" 
+          stroke-linejoin="round" 
+          stroke-linecap="round" />
+
+    <!-- 3 Horizontal Circuit Traces with Nodes -->
+    <path d="M 33 28 H 18 L 14 32" fill="none" stroke="#00F0FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="14" cy="32" r="2.5" fill="#00F0FF" />
+
+    <path d="M 32 37 H 16 L 20 42" fill="none" stroke="#00F0FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="20" cy="42" r="2.5" fill="#00F0FF" />
+
+    <path d="M 34 46 H 23 L 26 51" fill="none" stroke="#00F0FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="26" cy="51" r="2.5" fill="#00F0FF" />
+  </g>
+
+  <!-- Stacked Typography "AI AUTOMATION LABS" -->
+  <g transform="translate(84, 10)">
+    <text x="0" y="20" font-family="'Outfit', 'Plus Jakarta Sans', -apple-system, sans-serif" font-weight="900" font-size="20" fill="#FFFFFF" letter-spacing="2">AI</text>
+    <text x="0" y="40" font-family="'Outfit', 'Plus Jakarta Sans', -apple-system, sans-serif" font-weight="800" font-size="16" fill="#00F0FF" letter-spacing="1">AUTOMATION</text>
+    <text x="0" y="58" font-family="'Outfit', 'Plus Jakarta Sans', -apple-system, sans-serif" font-weight="800" font-size="16" fill="#FFFFFF" letter-spacing="1.5">LABS</text>
+  </g>
+</svg>
