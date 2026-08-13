@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // =========================================================================
 
   const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbzuNE4JrQfEsPXheFQ88FFxr3nDk9pLn3lJ3rXz8Yf3UUHrIxq3Ub448azzHJ9VBJSR/exec";
+    "https://script.google.com/macros/s/AKfycbxBvc6djQ0o8LvZIB2hU-bOCgFNDWAsZXK6tNNeYSZolUTHHK-pMFI62NMLsF9OIR5J/exec";
 
 
   // =========================================================================
