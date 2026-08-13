@@ -8,157 +8,339 @@ document.addEventListener('DOMContentLoaded', () => {
   // GOOGLE SHEETS CONNECTION
   // =========================================================================
 
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuNE4JrQfEsPXheFQ88FFxr3nDk9pLn3lJ3rXz8Yf3UUHrIxq3Ub448azzHJ9VBJSR/exec";
+  const GOOGLE_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbzuNE4JrQfEsPXheFQ88FFxr3nDk9pLn3lJ3rXz8Yf3UUHrIxq3Ub448azzHJ9VBJSR/exec";
+
+
+  // =========================================================================
+  // HELPER - SEND DATA TO GOOGLE SHEETS
+  // =========================================================================
+
+  function sendToGoogleSheets(data) {
+
+    // Create hidden iframe only once
+    let iframe =
+      document.getElementById('google-sheets-frame');
+
+    if (!iframe) {
+
+      iframe = document.createElement('iframe');
+
+      iframe.id = 'google-sheets-frame';
+
+      iframe.name = 'google-sheets-frame';
+
+      iframe.style.display = 'none';
+
+      document.body.appendChild(iframe);
+    }
+
+
+    // Create a normal HTML form
+    const form =
+      document.createElement('form');
+
+    form.method = 'POST';
+
+    form.action = GOOGLE_SCRIPT_URL;
+
+    form.target = 'google-sheets-frame';
+
+    form.style.display = 'none';
+
+
+    // Add hidden field
+    function addField(name, value) {
+
+      const input =
+        document.createElement('input');
+
+      input.type = 'hidden';
+
+      input.name = name;
+
+      input.value =
+        value === undefined || value === null
+          ? ''
+          : value;
+
+      form.appendChild(input);
+    }
+
+
+    // Add all data
+    Object.keys(data).forEach(key => {
+
+      addField(
+        key,
+        data[key]
+      );
+
+    });
+
+
+    // Add form to page
+    document.body.appendChild(form);
+
+
+    // Submit to Google Apps Script
+    form.submit();
+
+
+    // Remove temporary form
+    setTimeout(() => {
+
+      if (form.parentNode) {
+        form.parentNode.removeChild(form);
+      }
+
+    }, 2000);
+  }
 
 
   // =========================================================================
   // 1. NAVBAR SCROLL ACTIVE LINK OBSERVER
   // =========================================================================
 
-  const navLinks = document.querySelectorAll('.nav-links a');
-  const sections = document.querySelectorAll('section[id]');
+  const navLinks =
+    document.querySelectorAll('.nav-links a');
+
+  const sections =
+    document.querySelectorAll('section[id]');
+
 
   function updateActiveNav() {
-    let currentScroll = window.scrollY + 130;
+
+    let currentScroll =
+      window.scrollY + 130;
+
 
     sections.forEach(section => {
-      const sectionTop = section.offsetTop;
-      const sectionHeight = section.offsetHeight;
-      const sectionId = section.getAttribute('id');
+
+      const sectionTop =
+        section.offsetTop;
+
+      const sectionHeight =
+        section.offsetHeight;
+
+      const sectionId =
+        section.getAttribute('id');
+
 
       if (
         currentScroll >= sectionTop &&
         currentScroll < sectionTop + sectionHeight
       ) {
+
         navLinks.forEach(link => {
+
           link.classList.remove('active');
 
-          if (link.getAttribute('href') === `#${sectionId}`) {
+
+          if (
+            link.getAttribute('href') ===
+            `#${sectionId}`
+          ) {
+
             link.classList.add('active');
+
           }
+
         });
+
       }
+
     });
+
   }
 
-  window.addEventListener('scroll', updateActiveNav);
+
+  window.addEventListener(
+    'scroll',
+    updateActiveNav
+  );
 
 
   // =========================================================================
   // 2. CHAOS VS CLARITY VISUAL SWITCHER
   // =========================================================================
 
-  const toggleChaosBtn = document.getElementById('toggle-chaos');
-  const toggleClarityBtn = document.getElementById('toggle-clarity');
-  const comparisonContainer = document.getElementById('comparison-container');
+  const toggleChaosBtn =
+    document.getElementById('toggle-chaos');
+
+  const toggleClarityBtn =
+    document.getElementById('toggle-clarity');
+
+  const comparisonContainer =
+    document.getElementById('comparison-container');
+
 
   const chaosData = [
+
     {
       dept: "Sales says",
       text: '"We confirmed delivery."'
     },
+
     {
       dept: "Production says",
       text: '"We never got the job."'
     },
+
     {
       dept: "Purchase says",
       text: '"We didn\'t know material was required."'
     },
+
     {
       dept: "Inventory says",
       text: '"We don\'t have stock."'
     },
+
     {
       dept: "Accounts says",
       text: '"The payment is still pending."'
     },
+
     {
       dept: "Management asks",
       text: '"What is happening?" ➔ Nobody knows.'
     }
+
   ];
 
+
   const clarityData = [
+
     {
       dept: "Sales AI",
-      text: "⚡ AI automatically logged enquiry and generated verified quotation in 3 mins."
+      text:
+        "⚡ AI automatically logged enquiry and generated verified quotation in 3 mins."
     },
+
     {
       dept: "Production AI",
-      text: "⚡ Job card auto-dispatched to shopfloor station with digital checklist."
+      text:
+        "⚡ Job card auto-dispatched to shopfloor station with digital checklist."
     },
+
     {
       dept: "Purchase AI",
-      text: "⚡ Predictive buffer alert auto-generated PO 48 hours before shortage."
+      text:
+        "⚡ Predictive buffer alert auto-generated PO 48 hours before shortage."
     },
+
     {
       dept: "Inventory AI",
-      text: "⚡ Barcode scanned material issue tracked live on mobile app."
+      text:
+        "⚡ Barcode scanned material issue tracked live on mobile app."
     },
+
     {
       dept: "Accounts AI",
-      text: "⚡ Automated Tally Prime sync generated GST invoice upon gatepass approval."
+      text:
+        "⚡ Automated Tally Prime sync generated GST invoice upon gatepass approval."
     },
+
     {
       dept: "Management AI",
-      text: "⚡ Real-time executive dashboard displays 94.8% OEE from anywhere."
+      text:
+        "⚡ Real-time executive dashboard displays 94.8% OEE from anywhere."
     }
+
   ];
+
 
   function renderComparison(mode) {
 
-    if (!comparisonContainer) return;
+    if (!comparisonContainer)
+      return;
+
 
     comparisonContainer.innerHTML = '';
 
-    const isChaos = mode === 'chaos';
-    const items = isChaos ? chaosData : clarityData;
+
+    const isChaos =
+      mode === 'chaos';
+
+
+    const items =
+      isChaos
+        ? chaosData
+        : clarityData;
+
 
     items.forEach(item => {
 
-      const card = document.createElement('div');
+      const card =
+        document.createElement('div');
+
 
       card.className =
-        `comp-card ${isChaos ? 'chaos-mode' : 'clarity-mode'}`;
+        `comp-card ${
+          isChaos
+            ? 'chaos-mode'
+            : 'clarity-mode'
+        }`;
+
 
       card.innerHTML = `
-        <div class="comp-dept">${item.dept}</div>
-        <div class="comp-text">${item.text}</div>
+        <div class="comp-dept">
+          ${item.dept}
+        </div>
+
+        <div class="comp-text">
+          ${item.text}
+        </div>
       `;
+
 
       comparisonContainer.appendChild(card);
 
     });
+
   }
 
-  if (toggleChaosBtn && toggleClarityBtn) {
 
-    toggleChaosBtn.addEventListener('click', () => {
+  if (
+    toggleChaosBtn &&
+    toggleClarityBtn
+  ) {
 
-      toggleChaosBtn.className =
-        'toggle-btn active chaos';
+    toggleChaosBtn.addEventListener(
+      'click',
+      () => {
 
-      toggleClarityBtn.className =
-        'toggle-btn';
+        toggleChaosBtn.className =
+          'toggle-btn active chaos';
 
-      renderComparison('chaos');
+        toggleClarityBtn.className =
+          'toggle-btn';
 
-    });
+        renderComparison('chaos');
 
-    toggleClarityBtn.addEventListener('click', () => {
+      }
+    );
 
-      toggleClarityBtn.className =
-        'toggle-btn active clarity';
 
-      toggleChaosBtn.className =
-        'toggle-btn';
+    toggleClarityBtn.addEventListener(
+      'click',
+      () => {
 
-      renderComparison('clarity');
+        toggleClarityBtn.className =
+          'toggle-btn active clarity';
 
-    });
+        toggleChaosBtn.className =
+          'toggle-btn';
+
+        renderComparison('clarity');
+
+      }
+    );
+
 
     renderComparison('clarity');
+
   }
 
 
@@ -169,18 +351,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const hotspots =
     document.querySelectorAll('.hotspot-chip');
 
+
   hotspots.forEach(chip => {
 
-    chip.addEventListener('click', () => {
+    chip.addEventListener(
+      'click',
+      () => {
 
-      const info =
-        chip.getAttribute('data-info');
+        const info =
+          chip.getAttribute('data-info');
 
-      alert(
-        `🤖 AI Smart Sensor Telemetry:\n\n${info}`
-      );
 
-    });
+        alert(
+          `🤖 AI Smart Sensor Telemetry:\n\n${info}`
+        );
+
+      }
+    );
 
   });
 
@@ -191,6 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const dashTabs =
     document.querySelectorAll('.d-tab');
+
 
   const stat1 =
     document.getElementById('m-stat-1');
@@ -204,68 +392,106 @@ document.addEventListener('DOMContentLoaded', () => {
   const stat4 =
     document.getElementById('m-stat-4');
 
+
   const dashMetrics = {
 
     overview: {
+
       s1: '94.8%',
+
       s2: '18 / 20',
+
       s3: '142 Units',
+
       s4: '₹4.2L Saved'
+
     },
+
 
     production: {
+
       s1: '97.2%',
+
       s2: '20 / 20 Active',
+
       s3: '188 Units',
+
       s4: '100% Quality'
+
     },
+
 
     inventory: {
+
       s1: '99.1%',
+
       s2: '12 Raw Categories',
+
       s3: '0 Shortages',
+
       s4: '₹8.5L Buffer'
+
     },
 
+
     dispatch: {
+
       s1: '99.5%',
+
       s2: '45 Vehicles',
+
       s3: '100% Dispatched',
+
       s4: '₹24.8L Billed'
+
     }
 
   };
 
+
   dashTabs.forEach(tab => {
 
-    tab.addEventListener('click', () => {
+    tab.addEventListener(
+      'click',
+      () => {
 
-      dashTabs.forEach(t =>
-        t.classList.remove('active')
-      );
+        dashTabs.forEach(t =>
+          t.classList.remove('active')
+        );
 
-      tab.classList.add('active');
 
-      const key =
-        tab.getAttribute('data-tab');
+        tab.classList.add('active');
 
-      if (dashMetrics[key]) {
 
-        if (stat1)
-          stat1.textContent = dashMetrics[key].s1;
+        const key =
+          tab.getAttribute('data-tab');
 
-        if (stat2)
-          stat2.textContent = dashMetrics[key].s2;
 
-        if (stat3)
-          stat3.textContent = dashMetrics[key].s3;
+        if (dashMetrics[key]) {
 
-        if (stat4)
-          stat4.textContent = dashMetrics[key].s4;
+          if (stat1)
+            stat1.textContent =
+              dashMetrics[key].s1;
+
+
+          if (stat2)
+            stat2.textContent =
+              dashMetrics[key].s2;
+
+
+          if (stat3)
+            stat3.textContent =
+              dashMetrics[key].s3;
+
+
+          if (stat4)
+            stat4.textContent =
+              dashMetrics[key].s4;
+
+        }
 
       }
-
-    });
+    );
 
   });
 
@@ -277,72 +503,104 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatBox =
     document.getElementById('chat-box');
 
+
   const pBtns =
     document.querySelectorAll('.p-btn');
+
 
   const aiAnswers = {
 
     "What orders are delayed?":
       "⚡ **AI Analysis:** Zero production delays today! Order #PO-8942 is 92% complete and scheduled for dispatch at 4:30 PM.",
 
+
     "Show raw material stock alert":
       "⚠️ **Inventory Alert:** MS Sheet 2mm stock will dip below threshold in 48 hrs. AI has pre-drafted a PO for JSW Steel.",
 
+
     "Which machine needs maintenance?":
       "⚙️ **Machine Telemetry:** CNC Lathe #3 exhibits 4.2% vibration anomaly. Predictive maintenance scheduled for tonight's shift change.",
+
 
     "Generate today's dispatch summary":
       "📦 **Dispatch Summary:** 142 units dispatched across 6 clients. Total billing generated: ₹24,80,000 with WhatsApp delivery tracking links sent."
 
   };
 
+
   pBtns.forEach(btn => {
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener(
+      'click',
+      () => {
 
-      const query =
-        btn.textContent.trim();
+        const query =
+          btn.textContent.trim();
 
-      const userBubble =
-        document.createElement('div');
 
-      userBubble.className =
-        'c-bubble user';
-
-      userBubble.textContent =
-        query;
-
-      chatBox.appendChild(userBubble);
-
-      chatBox.scrollTop =
-        chatBox.scrollHeight;
-
-      setTimeout(() => {
-
-        const aiBubble =
+        const userBubble =
           document.createElement('div');
 
-        aiBubble.className =
-          'c-bubble ai';
 
-        const raw =
-          aiAnswers[query] ||
-          "⚡ Querying factory telemetry...";
+        userBubble.className =
+          'c-bubble user';
 
-        aiBubble.innerHTML =
-          raw.replace(
-            /\*\*(.*?)\*\*/g,
-            '<strong>$1</strong>'
+
+        userBubble.textContent =
+          query;
+
+
+        if (chatBox) {
+
+          chatBox.appendChild(
+            userBubble
           );
 
-        chatBox.appendChild(aiBubble);
 
-        chatBox.scrollTop =
-          chatBox.scrollHeight;
+          chatBox.scrollTop =
+            chatBox.scrollHeight;
 
-      }, 400);
+        }
 
-    });
+
+        setTimeout(() => {
+
+          const aiBubble =
+            document.createElement('div');
+
+
+          aiBubble.className =
+            'c-bubble ai';
+
+
+          const raw =
+            aiAnswers[query] ||
+            "⚡ Querying factory telemetry...";
+
+
+          aiBubble.innerHTML =
+            raw.replace(
+              /\*\*(.*?)\*\*/g,
+              '<strong>$1</strong>'
+            );
+
+
+          if (chatBox) {
+
+            chatBox.appendChild(
+              aiBubble
+            );
+
+
+            chatBox.scrollTop =
+              chatBox.scrollHeight;
+
+          }
+
+        }, 400);
+
+      }
+    );
 
   });
 
@@ -354,28 +612,54 @@ document.addEventListener('DOMContentLoaded', () => {
   const roiRange =
     document.getElementById('roi-range');
 
+
   const roiValLabel =
-    document.getElementById('roi-val-label');
+    document.getElementById(
+      'roi-val-label'
+    );
+
 
   const roiAmount =
-    document.getElementById('roi-amount');
+    document.getElementById(
+      'roi-amount'
+    );
+
 
   function updateRoi() {
 
-    if (!roiRange) return;
+    if (!roiRange)
+      return;
+
 
     const cr =
-      parseFloat(roiRange.value);
+      parseFloat(
+        roiRange.value
+      );
 
-    roiValLabel.textContent =
-      `₹ ${cr} Crore`;
+
+    if (roiValLabel) {
+
+      roiValLabel.textContent =
+        `₹ ${cr} Crore`;
+
+    }
+
 
     const lossLakhs =
-      Math.round(cr * 4.5 * 10) / 10;
+      Math.round(
+        cr * 4.5 * 10
+      ) / 10;
 
-    roiAmount.textContent =
-      `₹ ${lossLakhs} Lakhs / Year`;
+
+    if (roiAmount) {
+
+      roiAmount.textContent =
+        `₹ ${lossLakhs} Lakhs / Year`;
+
+    }
+
   }
+
 
   if (roiRange) {
 
@@ -383,6 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'input',
       updateRoi
     );
+
 
     updateRoi();
 
@@ -396,26 +681,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const faqBoxes =
     document.querySelectorAll('.faq-box');
 
+
   faqBoxes.forEach(box => {
 
     const btn =
       box.querySelector('.faq-btn');
 
-    if (!btn) return;
 
-    btn.addEventListener('click', () => {
+    if (!btn)
+      return;
 
-      const active =
-        box.classList.contains('active');
 
-      faqBoxes.forEach(fb =>
-        fb.classList.remove('active')
-      );
+    btn.addEventListener(
+      'click',
+      () => {
 
-      if (!active)
-        box.classList.add('active');
+        const active =
+          box.classList.contains('active');
 
-    });
+
+        faqBoxes.forEach(fb =>
+          fb.classList.remove('active')
+        );
+
+
+        if (!active)
+          box.classList.add('active');
+
+      }
+    );
 
   });
 
@@ -427,225 +721,241 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalOverlay =
     document.getElementById('audit-modal');
 
+
   const openModalBtns =
-    document.querySelectorAll('.open-audit-modal');
+    document.querySelectorAll(
+      '.open-audit-modal'
+    );
+
 
   const closeModalBtn =
-    document.getElementById('close-modal');
+    document.getElementById(
+      'close-modal'
+    );
+
 
   const auditForm =
-    document.getElementById('audit-form');
+    document.getElementById(
+      'audit-form'
+    );
+
 
   openModalBtns.forEach(b => {
 
-    b.addEventListener('click', (e) => {
+    b.addEventListener(
+      'click',
+      (e) => {
 
-      e.preventDefault();
+        e.preventDefault();
 
-      if (modalOverlay)
-        modalOverlay.classList.add('active');
 
-    });
+        if (modalOverlay) {
+
+          modalOverlay.classList.add(
+            'active'
+          );
+
+        }
+
+      }
+    );
 
   });
 
+
   if (closeModalBtn) {
 
-    closeModalBtn.addEventListener('click', () => {
+    closeModalBtn.addEventListener(
+      'click',
+      () => {
 
-      if (modalOverlay)
-        modalOverlay.classList.remove('active');
+        if (modalOverlay) {
 
-    });
+          modalOverlay.classList.remove(
+            'active'
+          );
+
+        }
+
+      }
+    );
 
   }
 
+
   if (modalOverlay) {
 
-    modalOverlay.addEventListener('click', (e) => {
+    modalOverlay.addEventListener(
+      'click',
+      (e) => {
 
-      if (e.target === modalOverlay)
-        modalOverlay.classList.remove('active');
+        if (
+          e.target === modalOverlay
+        ) {
 
-    });
+          modalOverlay.classList.remove(
+            'active'
+          );
+
+        }
+
+      }
+    );
 
   }
 
 
   // =========================================================================
-  // 9. AUDIT FORM → GOOGLE SHEETS
+  // 9. FACTORY GROWTH AUDIT FORM → GOOGLE SHEETS
   // =========================================================================
 
   if (auditForm) {
 
     auditForm.addEventListener(
       'submit',
-      async (e) => {
+      (e) => {
 
         e.preventDefault();
 
+
         const name =
-          document.getElementById('f-name')
-            .value.trim();
+          document.getElementById(
+            'f-name'
+          ).value.trim();
+
 
         const phone =
-          document.getElementById('f-phone')
-            .value.trim();
+          document.getElementById(
+            'f-phone'
+          ).value.trim();
+
 
         const company =
-          document.getElementById('f-company')
-            .value.trim();
+          document.getElementById(
+            'f-company'
+          ).value.trim();
+
 
         const turnover =
-          document.getElementById('f-turnover')
-            .value;
+          document.getElementById(
+            'f-turnover'
+          ).value;
+
 
         const modalCard =
           document.querySelector(
             '#audit-modal .modal-card'
           );
 
+
         const submitButton =
           auditForm.querySelector(
             'button[type="submit"]'
           );
 
+
         if (submitButton) {
 
-          submitButton.disabled = true;
+          submitButton.disabled =
+            true;
 
           submitButton.textContent =
             'Submitting...';
 
         }
 
-        try {
 
-          await fetch(
-            GOOGLE_SCRIPT_URL,
-            {
-              method: 'POST',
+        // SEND TO GOOGLE SHEETS
+        sendToGoogleSheets({
 
-              mode: 'no-cors',
+          formType:
+            'Factory Growth Audit',
 
-              headers: {
-                'Content-Type':
-                  'text/plain;charset=utf-8'
-              },
+          name:
+            name,
 
-              body: JSON.stringify({
+          email:
+            '',
 
-                formType:
-                  'Factory Growth Audit',
+          phone:
+            phone,
 
-                name:
-                  name,
+          company:
+            company,
 
-                email:
-                  '',
+          turnover:
+            turnover,
 
-                phone:
-                  phone,
+          message:
+            ''
 
-                company:
-                  company,
-
-                turnover:
-                  turnover,
-
-                message:
-                  ''
-
-              })
-            }
-          );
+        });
 
 
-          // SUCCESS MESSAGE
+        // SHOW SUCCESS MESSAGE
 
-          if (modalCard) {
+        if (modalCard) {
 
-            modalCard.innerHTML = `
+          modalCard.innerHTML = `
+
+            <div style="
+              text-align: center;
+              padding: 20px;
+            ">
 
               <div style="
-                text-align: center;
-                padding: 20px;
+                width: 64px;
+                height: 64px;
+                background: rgba(0,240,255,0.15);
+                color: #00F0FF;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.2rem;
+                margin: 0 auto 20px auto;
+                border: 2px solid #00F0FF;
+                box-shadow:
+                  0 0 25px rgba(0,240,255,0.4);
               ">
-
-                <div style="
-                  width: 64px;
-                  height: 64px;
-                  background: rgba(0,240,255,0.15);
-                  color: #00F0FF;
-                  border-radius: 50%;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 2.2rem;
-                  margin: 0 auto 20px auto;
-                  border: 2px solid #00F0FF;
-                  box-shadow:
-                    0 0 25px rgba(0,240,255,0.4);
-                ">
-                  ✓
-                </div>
-
-                <h3 style="
-                  font-size: 1.8rem;
-                  margin-bottom: 12px;
-                  color: #FFF;
-                ">
-                  Audit Reserved, ${name}!
-                </h3>
-
-                <p style="
-                  color: #94A3B8;
-                  font-size: 1.05rem;
-                  margin-bottom: 24px;
-                ">
-                  Dr. Ajay Kumar and our AI Senior
-                  Solutions Architect will contact you
-                  within 4 business hours to schedule
-                  your ₹50,000 Factory Profit Leak Audit.
-                </p>
-
-                <button
-                  class="btn btn-orange"
-                  onclick="
-                    document
-                      .getElementById('audit-modal')
-                      .classList.remove('active');
-                    location.reload();
-                  "
-                >
-                  Done
-                </button>
-
+                ✓
               </div>
 
-            `;
+              <h3 style="
+                font-size: 1.8rem;
+                margin-bottom: 12px;
+                color: #FFF;
+              ">
+                Audit Reserved, ${name}!
+              </h3>
 
-          }
+              <p style="
+                color: #94A3B8;
+                font-size: 1.05rem;
+                margin-bottom: 24px;
+              ">
+                Dr. Ajay Kumar and our AI Senior
+                Solutions Architect will contact you
+                within 4 business hours to schedule
+                your ₹50,000 Factory Profit Leak Audit.
+              </p>
 
-        } catch (error) {
+              <button
+                class="btn btn-orange"
+                onclick="
+                  document
+                    .getElementById('audit-modal')
+                    .classList.remove('active');
 
-          console.error(
-            'Google Sheets submission error:',
-            error
-          );
+                  location.reload();
+                "
+              >
+                Done
+              </button>
 
-          if (submitButton) {
+            </div>
 
-            submitButton.disabled = false;
-
-            submitButton.textContent =
-              'Submit';
-
-          }
-
-          alert(
-            'There was a problem submitting your application. Please try again.'
-          );
+          `;
 
         }
 
@@ -660,33 +970,51 @@ document.addEventListener('DOMContentLoaded', () => {
   // =========================================================================
 
   const contactModalOverlay =
-    document.getElementById('contact-modal');
+    document.getElementById(
+      'contact-modal'
+    );
+
 
   const openContactModalBtns =
     document.querySelectorAll(
       '.open-contact-modal'
     );
 
+
   const closeContactModalBtn =
     document.getElementById(
       'close-contact-modal'
     );
 
+
   const contactForm =
-    document.getElementById('contact-form');
+    document.getElementById(
+      'contact-form'
+    );
+
 
   openContactModalBtns.forEach(b => {
 
-    b.addEventListener('click', (e) => {
+    b.addEventListener(
+      'click',
+      (e) => {
 
-      e.preventDefault();
+        e.preventDefault();
 
-      if (contactModalOverlay)
-        contactModalOverlay.classList.add('active');
 
-    });
+        if (contactModalOverlay) {
+
+          contactModalOverlay.classList.add(
+            'active'
+          );
+
+        }
+
+      }
+    );
 
   });
+
 
   if (closeContactModalBtn) {
 
@@ -694,15 +1022,19 @@ document.addEventListener('DOMContentLoaded', () => {
       'click',
       () => {
 
-        if (contactModalOverlay)
+        if (contactModalOverlay) {
+
           contactModalOverlay.classList.remove(
             'active'
           );
+
+        }
 
       }
     );
 
   }
+
 
   if (contactModalOverlay) {
 
@@ -710,7 +1042,9 @@ document.addEventListener('DOMContentLoaded', () => {
       'click',
       (e) => {
 
-        if (e.target === contactModalOverlay) {
+        if (
+          e.target === contactModalOverlay
+        ) {
 
           contactModalOverlay.classList.remove(
             'active'
@@ -725,177 +1059,154 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // =========================================================================
-  // 11. CONTACT FORM → GOOGLE SHEETS
+  // 11. CONTACT US FORM → GOOGLE SHEETS
   // =========================================================================
 
   if (contactForm) {
 
     contactForm.addEventListener(
       'submit',
-      async (e) => {
+      (e) => {
 
         e.preventDefault();
 
+
         const name =
-          document.getElementById('c-name')
-            .value.trim();
+          document.getElementById(
+            'c-name'
+          ).value.trim();
+
 
         const email =
-          document.getElementById('c-email')
-            .value.trim();
+          document.getElementById(
+            'c-email'
+          ).value.trim();
+
 
         const phone =
-          document.getElementById('c-phone')
-            .value.trim();
+          document.getElementById(
+            'c-phone'
+          ).value.trim();
+
 
         const message =
-          document.getElementById('c-message')
-            .value.trim();
+          document.getElementById(
+            'c-message'
+          ).value.trim();
+
 
         const modalCard =
           document.querySelector(
             '#contact-modal .modal-card'
           );
 
+
         const submitButton =
           contactForm.querySelector(
             'button[type="submit"]'
           );
 
+
         if (submitButton) {
 
-          submitButton.disabled = true;
+          submitButton.disabled =
+            true;
 
           submitButton.textContent =
             'Submitting...';
 
         }
 
-        try {
 
-          await fetch(
-            GOOGLE_SCRIPT_URL,
-            {
-              method: 'POST',
+        // SEND TO GOOGLE SHEETS
+        sendToGoogleSheets({
 
-              mode: 'no-cors',
+          formType:
+            'Contact Us',
 
-              headers: {
-                'Content-Type':
-                  'text/plain;charset=utf-8'
-              },
+          name:
+            name,
 
-              body: JSON.stringify({
+          email:
+            email,
 
-                formType:
-                  'Contact Us',
+          phone:
+            phone,
 
-                name:
-                  name,
+          company:
+            '',
 
-                email:
-                  email,
+          turnover:
+            '',
 
-                phone:
-                  phone,
+          message:
+            message
 
-                company:
-                  '',
-
-                turnover:
-                  '',
-
-                message:
-                  message
-
-              })
-            }
-          );
+        });
 
 
-          // SUCCESS MESSAGE
+        // SHOW SUCCESS MESSAGE
 
-          if (modalCard) {
+        if (modalCard) {
 
-            modalCard.innerHTML = `
+          modalCard.innerHTML = `
+
+            <div style="
+              text-align: center;
+              padding: 20px;
+            ">
 
               <div style="
-                text-align: center;
-                padding: 20px;
+                width: 64px;
+                height: 64px;
+                background: rgba(0,240,255,0.15);
+                color: #00F0FF;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.2rem;
+                margin: 0 auto 20px auto;
+                border: 2px solid #00F0FF;
+                box-shadow:
+                  0 0 25px rgba(0,240,255,0.4);
               ">
-
-                <div style="
-                  width: 64px;
-                  height: 64px;
-                  background: rgba(0,240,255,0.15);
-                  color: #00F0FF;
-                  border-radius: 50%;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 2.2rem;
-                  margin: 0 auto 20px auto;
-                  border: 2px solid #00F0FF;
-                  box-shadow:
-                    0 0 25px rgba(0,240,255,0.4);
-                ">
-                  ✓
-                </div>
-
-                <h3 style="
-                  font-size: 1.8rem;
-                  margin-bottom: 12px;
-                  color: #FFF;
-                ">
-                  Thank You, ${name}!
-                </h3>
-
-                <p style="
-                  color: #94A3B8;
-                  font-size: 1.05rem;
-                  margin-bottom: 24px;
-                ">
-                  Your message has been received.
-                  Our team will get back to you shortly.
-                </p>
-
-                <button
-                  class="btn btn-orange"
-                  onclick="
-                    document
-                      .getElementById('contact-modal')
-                      .classList.remove('active');
-                    location.reload();
-                  "
-                >
-                  Done
-                </button>
-
+                ✓
               </div>
 
-            `;
+              <h3 style="
+                font-size: 1.8rem;
+                margin-bottom: 12px;
+                color: #FFF;
+              ">
+                Thank You, ${name}!
+              </h3>
 
-          }
+              <p style="
+                color: #94A3B8;
+                font-size: 1.05rem;
+                margin-bottom: 24px;
+              ">
+                Your message has been received.
+                Our team will get back to you shortly.
+              </p>
 
-        } catch (error) {
+              <button
+                class="btn btn-orange"
+                onclick="
+                  document
+                    .getElementById('contact-modal')
+                    .classList.remove('active');
 
-          console.error(
-            'Google Sheets submission error:',
-            error
-          );
+                  location.reload();
+                "
+              >
+                Done
+              </button>
 
-          if (submitButton) {
+            </div>
 
-            submitButton.disabled = false;
-
-            submitButton.textContent =
-              'Submit';
-
-          }
-
-          alert(
-            'There was a problem submitting your message. Please try again.'
-          );
+          `;
 
         }
 
